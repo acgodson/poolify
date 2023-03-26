@@ -13,6 +13,7 @@ import ERC20 from "../utils/abi/ERC20.json"
 import POOL from "../utils/abi/PoolFactory.json"
 import WBIT from "../utils/abi/WBIT9.json"
 import bs58 from "bs58";
+import BigNumber from 'bignumber.js';
 
 
 interface WalletObjectType {
@@ -196,43 +197,46 @@ const Home = () => {
                 console.log("allowance given", tx);
                 setWaiting(false);
 
-                //Register DAO
+                // //Register DAO
                 const tx2 = await Poolcontract.registerDAO(ipfsHash);
                 setRegistering(true);
                 await tx.wait();
                 setRegistering(false);
                 console.log("DAO registerd", tx);
-                //Retrieve]DAO index
+                // //Retrieve]DAO index
                 setCreatingPool(true)
                 const daoCount = await Poolcontract.daoCount();
                 const count = ethers.getBigInt(daoCount);
                 const index = Number(count.toString());
                 const lastDaoIndex = index - 1;
-                // const lastDao = await Poolcontract.daos(lastDaoIndex);
+                const lastDao = await Poolcontract.daos(lastDaoIndex);
+                console.log(lastDao);
 
+                //FetchPair Price from redstone oracle
                 const getExchangeRatePrice = async () => {
-                    const tokenResponse = await fetch(`https://api.redstone.finance/prices/?symbol=${walletObject?.symbol}&provider=redstone&limit=1`);
+                    const tokenResponse = await fetch(`https://api.redstone.finance/prices/?symbol=BIT&provider=redstone&limit=1`);
                     const tokenData = await tokenResponse.json();
-                    const tokenValue = tokenData[0].value;
-                    const tokenPrice = ethers.parseEther(tokenValue.toString());
-
-
-
-                    const pairResponse = await fetch(`https://api.redstone.finance/prices/?symbol=${pairSymbol}&provider=redstone&limit=1`);
-                    const pairData = await pairResponse.json();
-                    const pairValue = await pairData[0].value;
-                    const pairPrice = ethers.parseEther(pairValue.toString());
-
-                    const exchangeRatePrice = tokenPrice / pairPrice;
-                    console.log("exchange rate");
-                    return exchangeRatePrice;
+                    const tokenPrice = tokenData[0].value;
+                    if (tokenPrice) {
+                        const pairResponse = await fetch(`https://api.redstone.finance/prices/?symbol=ETH&provider=redstone&limit=1`);
+                        const pairData = await pairResponse.json();
+                        const pairPrice = await pairData[0].value;
+                        if (pairPrice) {
+                            const exchangeRatePrice = tokenPrice / pairPrice
+                            console.log("exchange rate", exchangeRatePrice);
+                            return exchangeRatePrice;
+                        }
+                    }
                 };
 
                 getExchangeRatePrice().then(async (result) => {
-                    const bigN = ethers.parseEther(result.toString());
-                    console.log("price", bigN);
-                    setGettingPrice(false)
-                    setPrice(bigN);
+
+
+                    console.log("result to be changed", result);
+                    const multiplier = new BigNumber('10').pow(18);
+                    const bigIntValue = new BigNumber(result!).times(multiplier).integerValue(BigNumber.ROUND_DOWN).toFixed();
+                    console.log("big int", BigInt(bigIntValue));
+                    const bigN = BigInt(bigIntValue)
                     //Create single asset Pool
                     const tx3 = await Poolcontract.createSingleAssetPool(
                         lastDaoIndex,
@@ -250,12 +254,6 @@ const Home = () => {
                         duration: 4000,
                     })
                     setSubmitting(false)
-
-
-
-
-
-
                 }).catch(error => console.error(error));
             }
         } catch (e) {
@@ -264,10 +262,8 @@ const Home = () => {
             setWaiting(false);
             setRegistering(false);
             setCreating(false)
-
         }
     }
-
 
 
 
