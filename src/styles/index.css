@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #222;
+  color: white;
+  font-family: "Russo One", sans-serif;
+}
+
+h1 {
+  font-family: "Russo One", sans-serif;
+}
+
+button {
+  font-family: "Russo One", sans-serif;
+  font-weight: "bold";
+}
+
+.general {
+  background: url("/texture.jpg");
+}
+
+.general::before {
+  content: "";
+  display: inline;
+  position: absolute;
+  overflow-x: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0.95;
+  animation: move 20s linear infinite;
+}
+
+@keyframes move {
+  100% {
+    background-position: 0 0;
+  }
+  0% {
+    background-position: 100% 0;
+  }
+}
