@@ -1,8 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Poolify allows DAOs to create single-asset pools for their native token, and reward members of the DAO for acting as watchers by pushing exchange prices on chain
 
-## Getting Started
+## Built on Mantle Testnet (EthGLobal Sponsor)
 
-First, run the development server:
+Poolify is a contract on mantle that enables non-technical DAOs to create simple, single-asset pools for their native token, while incentivizing members to act as watchers by pushing the latest exchange prices on chain. To join as a watcher, investors or arbitrageurs provide collateral stakes, which also adds to the liquidity of the pool.
+
+## Additional tools
+
+- Web front-end built with Next.js, Chakra-UI, tailwind and ethers.js
+- Prices are fetched from redstone finance oracle
+- IPFS integration for DAO metadata
+
+## Smart Contract
+
+In the PoolFactory contract, involving arbitrageurs (aka watchers/investors):
+
+- DAOs can register to the contract and create a single-asset-pool against their native token. for example a pool of Ether against the DAO's WBit as demonstrated in the [demo]("https://ethglobal.com/showcase/poolify-sppap)
+
+- Traders and Investors can swap the paired token in the pool against the native token. The exchange price is always balanced against the market prices of each token.
+
+- Arbitrageurs (Watchers) can join any pool index by staking a certain amount of native token of the DAO.
+
+- As a watcher, you can push prices of token on-chain at the point of transaction or at any given time when the market price changes to recieve rewards
+
+- Rewards are distributed to investors from tansaction fees based on their stake in each pool and price-pushing activity.
+
+- The Collateral can be used to as security to ensure that a watcher is punished for pushing any wrong price
+
+## Requirements for testing
+
+- Add Mantle Network to your Metamask
+- Create a new DAO and first pool, or swap Tokens from existing DAOs (pools)
+
+To test locally, run the development server:
 
 ```bash
 npm run dev
@@ -12,27 +41,3 @@ yarn dev
 pnpm devREA
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
